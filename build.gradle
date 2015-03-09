@@ -41,3 +41,31 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:6.5.87'
     compile 'com.google.android.gms:play-services-base:6.5.87'
 }
+
+Properties properties = new Properties()
+properties.load(project.rootProject.file('local.properties').newDataInputStream())
+
+def siteUrl = 'https://code.google.com/p/apurilib/'
+def gitUrl = 'https://apuridev@code.google.com/p/apurilib/'
+
+version = '1.0b'
+
+bintray {
+    user = properties.getProperty("bintray_user")
+    key = properties.getProperty("bintray_api")
+
+    configurations = ['archives']
+    pkg {
+        repo = "maven"
+        name = "apurilib"
+        websiteUrl = siteUrl
+        vcsUrl = gitUrl
+        licenses = ["Apache-2.0"]
+        publish = true
+        version {
+            name = '1.0b' //Optional logical version name
+            desc = 'first version'
+            vcsTag = '1.0b'
+        }
+    }
+}
