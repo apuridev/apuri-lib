@@ -85,38 +85,6 @@ artifacts {
     archives sourcesJar
 }
 
-
-install {
-    repositories.mavenInstaller {
-        // This generates POM.xml with proper parameters
-        pom {
-            project {
-                packaging 'aar'
-
-                // Add your description here
-                name 'Utility library for android'
-                url siteUrl
-
-                // Set your license
-                licenses {
-                    license {
-                        name 'The Apache Software License, Version 2.0'
-                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    }
-                }
-                scm {
-                    connection gitUrl
-                    developerConnection gitUrl
-                    url siteUrl
-
-                }
-            }
-            artifactId = "apurilib"
-        }
-    }
-}
-
-
 bintray {
     user = properties.getProperty("bintray_user")
     key = properties.getProperty("bintray_api")
