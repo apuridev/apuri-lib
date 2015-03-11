@@ -21,7 +21,7 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 
 
-public class SearchViewUtils {
+public class ApuriSearchViewUtils {
 
 	public static class CustomSearchViewBuilder{
 		private SearchView searchView;

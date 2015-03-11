@@ -30,22 +30,32 @@ import java.util.Map;
 
 import br.com.apuri.utils.ApuriJavaUtils;
 
-
-public class MultipleChoicePreference extends DialogPreference {
+/**
+ * Preference dialog that provided multiple choice options with checkbox.
+ * The selection options are stored in a string with the format "value1, value2, value3..."
+ */
+public class ApuriMultipleChoicePreference extends DialogPreference {
     
-    private Map<String,String> entries;
+    private Map<String,Object> entries;
 
     private boolean[] checkedItems;
     private String[] keys;
-    private String[] currentStrings;
-
-    public MultipleChoicePreference (Context context, AttributeSet attrs) {
+    private String[] values;
+    private String[] currentValues;
+    public ApuriMultipleChoicePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
         setPositiveButtonText(android.R.string.ok);
         setNegativeButtonText(android.R.string.cancel);
     }
 
-    public void setEntries(Map<String,String> entries){
+    /**
+     * Set the possible choices for this preference.
+     *
+     * @param entries A map were the keys are the label to be shown in the dialog and the values are the
+     *                values that will be stored, AS STRINGS, in this preference
+     *
+     */
+    public void setEntries(Map<String,Object> entries){
         this.entries = entries;
         keys = entries.keySet().toArray(new String[0]);
         checkedItems = new boolean[entries.values().size()];
@@ -53,8 +63,8 @@ public class MultipleChoicePreference extends DialogPreference {
     @Override
     protected void onPrepareDialogBuilder(AlertDialog.Builder builder) {
         CharSequence[] items = new CharSequence[0];
-        if(currentStrings != null && currentStrings.length > 0){
-            checkItemsForKeys(currentStrings);
+        if(currentValues != null && currentValues.length > 0){
+            checkItemsForValues(currentValues);
         }
         builder.setMultiChoiceItems(entries.keySet().toArray(items), checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
             @Override
@@ -70,29 +80,29 @@ public class MultipleChoicePreference extends DialogPreference {
         if(positiveResult){
             String values = getSelectedValuesAsString();
             persistString(getSelectedValuesAsString());
-            currentStrings = values.split(", ");
+            currentValues = values.split(", ");
         }
     }
-    
-
 
     private String getSelectedValuesAsString() {
         StringBuilder stringBuilder = new StringBuilder();
         for(int i = 0; i < checkedItems.length; i++){
             if(checkedItems[i]) {
                 if(stringBuilder.length() == 0)
-                    stringBuilder.append(keys[i]);
+                    stringBuilder.append(entries.get(keys[i]).toString());
                 else
-                    stringBuilder.append(", ").append(keys[i]);
+                    stringBuilder.append(", ").append(entries.get(keys[i]).toString());
             }
         }
         return stringBuilder.toString();
     }
 
-    public static String[] getSelectedValuesFromString(String multipleChoicePreference){
-        if(ApuriJavaUtils.isEmptyString(multipleChoicePreference))
-            return new String[0];
-        return multipleChoicePreference.split(", ");
+    /**
+     *
+     * @return Return the selected values for this preference as an array of {@link java.lang.String}
+     */
+    public String[] getSelectedValues(){
+        return currentValues;
     }
 
     @Override
@@ -100,7 +110,7 @@ public class MultipleChoicePreference extends DialogPreference {
         if(restorePersistedString){
             String values = getPersistedString("");
             if(!ApuriJavaUtils.isEmptyString(values)) {
-                this.currentStrings = values.split(", ");
+                this.currentValues = values.split(", ");
                 Log.d("MultipleChoicePreferenc","current values: "+values);
             }
             this.setSummary(values);
@@ -145,14 +155,16 @@ public class MultipleChoicePreference extends DialogPreference {
         super.onRestoreInstanceState(myState.getSuperState());
 
         String[] selectedKeys = myState.value.split(", ");
-        checkItemsForKeys(selectedKeys);
+        checkItemsForValues(selectedKeys);
 
     }
 
-    private void checkItemsForKeys(String[] selectedKeys){
+    private void checkItemsForValues(String[] selectedValues){
+        String value = null;
         for(int i = 0; i < keys.length; i++){
-            for(int j = 0; j < selectedKeys.length; j++)
-                if(selectedKeys[j].equals(keys[i]))
+            value = entries.get(keys[i]).toString();
+            for(int j = 0; j < selectedValues.length; j++)
+                if(selectedValues[j].equals(value))
                     checkedItems[i] = true;
         }
     }

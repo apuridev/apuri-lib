@@ -16,7 +16,7 @@
 
 package br.com.apuri.exceptions;
 
-public class SynchronizationException extends ApuriException {
+public class ApuriSynchronizationException extends ApuriException {
 
 	/**
 	 * 
@@ -29,7 +29,7 @@ public class SynchronizationException extends ApuriException {
 	
 	private SynchronizationExceptionStatus status;
 	
-	public SynchronizationException(SynchronizationExceptionStatus status){
+	public ApuriSynchronizationException(SynchronizationExceptionStatus status){
 		super();
 		this.status = status;
 	}
@@ -38,11 +38,11 @@ public class SynchronizationException extends ApuriException {
 		return status;
 	}
 	
-	public static SynchronizationException notConnected(){
-		return new SynchronizationException(SynchronizationExceptionStatus.NOT_CONNECTED);
+	public static ApuriSynchronizationException notConnected(){
+		return new ApuriSynchronizationException(SynchronizationExceptionStatus.NOT_CONNECTED);
 	}
 
-	public static SynchronizationException noLocation(){
-		return new SynchronizationException(SynchronizationExceptionStatus.NO_LOCATION);
+	public static ApuriSynchronizationException noLocation(){
+		return new ApuriSynchronizationException(SynchronizationExceptionStatus.NO_LOCATION);
 	}
 }

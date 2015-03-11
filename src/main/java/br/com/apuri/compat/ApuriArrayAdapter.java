@@ -25,6 +25,14 @@ import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.widget.ArrayAdapter;
+
+/**
+ * Implementation of {@link android.widget.ArrayAdapter} with backwards
+ * compatibility to api-9.
+ * Mainly it allows the method addAll to be used by all versions beginning
+ * at the api-9
+ * @param <T>
+ */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class ApuriArrayAdapter<T> extends ArrayAdapter<T>{
 

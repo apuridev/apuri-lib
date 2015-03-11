@@ -26,7 +26,7 @@ import br.com.apuri.lib.R;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-public class DividerItemDecoration extends RecyclerView.ItemDecoration {
+public class ApuriDividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private static final int[] ATTRS = new int[]{
             R.drawable.line_divider
@@ -40,7 +40,7 @@ public class DividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private int mOrientation;
 
-    public DividerItemDecoration(Context context, int orientation) {
+    public ApuriDividerItemDecoration(Context context, int orientation) {
 //        final TypedArray a = context.obtainStyledAttributes(ATTRS);
         mDivider = context.getResources().getDrawable(R.drawable.line_divider);//a.getDrawable(0);
 //        a.recycle();

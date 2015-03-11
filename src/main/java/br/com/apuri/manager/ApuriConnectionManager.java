@@ -26,6 +26,9 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 
+/**
+ * Class that monitors the state of the connection in the system
+ */
 public class ApuriConnectionManager {
 
 	private static ApuriConnectionManager instance;
@@ -39,7 +42,7 @@ public class ApuriConnectionManager {
 	
 	/**
 	 * This method should be called only once. It should pass the context that will be used
-	 * to get services
+	 * to get system services
 	 * @param context
 	 */
 	public synchronized static void configure(Context context){
@@ -85,10 +88,19 @@ public class ApuriConnectionManager {
 		mContext.registerReceiver(receiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 	}
 
+    /**
+     *
+     * @return true if there is some connection available, false otherwise
+     */
 	public boolean isConnected(){
 		return connected;
 	}
-	
+
+    /**
+     * Adds the connection observer if there is no connection current available
+     * @param observer
+     * @return true if there is some connection available, false otherwise
+     */
 	public synchronized boolean registerForConnectionObserverIfNotConnected(ApuriConnectionObserver observer){
 		if(!isConnected()){
 			this.observers.add(observer);
@@ -123,7 +135,14 @@ public class ApuriConnectionManager {
 	}
 
 	public interface ApuriConnectionObserver{
+        /**
+         * Method called when the connection is lost
+         */
 		void didLostConnection();
+
+        /**
+         * Method called when a connection is stabilised
+         */
 		void didFoundConnection();
 	}
 
