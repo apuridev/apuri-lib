@@ -35,7 +35,7 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 21
-        versionCode 2
+        versionCode 3
         versionName version_tag
         project.archivesBaseName = "apurilib"
 

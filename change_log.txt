@@ -1,3 +1,5 @@
+v1.1.1
+ - Minor changes in the ApuriMapUtils
 v1.1
  - Methods names changes in ApuriMapUtils
  - Added prefix Apuri to all classes

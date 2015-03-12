@@ -25,6 +25,7 @@ import android.util.TypedValue;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -78,42 +79,55 @@ public class ApuriMapUtils {
 	}
 
     /**
-     * Creates a {@link com.google.android.gms.maps.SupportMapFragment} fixed at the provided location.
-     * The map location can not be changed by user interaction
-     * @param location - the location
-     * @return a SupportMapFragment
-     * @throws java.lang.IllegalArgumentException if location is null
+     * Calls {@link #fixedMapWithLocation(com.google.android.gms.maps.model.LatLng, float)} with a minHeight
+     * of 185 DIP
+     * @param location
+     * @return
      */
 	public static SupportMapFragment fixedMapWithLocation(final LatLng location){
-        if(location == null)
-            throw new IllegalArgumentException("The location can't be null");
-		SupportMapFragment fragment = new SupportMapFragment(){
-
-			public void onActivityCreated(android.os.Bundle savedInstanceState) {
-				super.onActivityCreated(savedInstanceState);
-				GoogleMap map = getMap();
-
-				map.addMarker(new MarkerOptions().position(location));
-				map.getUiSettings().setAllGesturesEnabled(false);
-				map.getUiSettings().setZoomControlsEnabled(false);
-//				ApuriMapUtils.configureFixedMapWithDirectionsIntent(this, location);
-                ApuriMapUtils.applyZoom(map, location,DEFAULT_ZOOM);
-
-                getView().setMinimumHeight(Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 185, getResources().getDisplayMetrics())));
-			};
-			
-		
-		};
-		
-		return fragment;
+        return  fixedMapWithLocation(location,185);
 	}
 
     /**
-     * Creates a directions intent for the provided location
-     * @param location the location to be used for the {@link android.content.Intent}
-     * @return a directions intent for the provided location
-     * @throws java.lang.IllegalArgumentException if the location is null
+     * Creates a {@link com.google.android.gms.maps.SupportMapFragment} fixed at the provided location with
+     * the provided minHeight.
+     * The map location can not be changed by user interaction
+     * @param location  the location
+     * @param minHeight the minimum height of the map view. This height will be used as parameter for
+     *                  {@link android.util.TypedValue#applyDimension(int, float, android.util.DisplayMetrics)}
+     * @return a SupportMapFragment
+     * @throws java.lang.IllegalArgumentException if location is null
      */
+    public static SupportMapFragment fixedMapWithLocation(final LatLng location, final float minHeight) {
+        if(location == null)
+            throw new IllegalArgumentException("The location can't be null");
+
+        SupportMapFragment fragment = new SupportMapFragment(){
+
+            public void onActivityCreated(android.os.Bundle savedInstanceState) {
+                super.onActivityCreated(savedInstanceState);
+                GoogleMap map = getMap();
+                getMapAsync(new OnMapReadyCallback() {
+                    @Override
+                    public void onMapReady(GoogleMap map) {
+                        map.getUiSettings().setAllGesturesEnabled(false);
+                        map.getUiSettings().setZoomControlsEnabled(false);
+                        ApuriMapUtils.applyZoom(map, location,DEFAULT_ZOOM);
+                    }
+
+                });
+                getView().setMinimumHeight(Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, minHeight, getResources().getDisplayMetrics())));
+            };
+        };
+        return fragment;
+    }
+
+        /**
+         * Creates a directions intent for the provided location
+         * @param location the location to be used for the {@link android.content.Intent}
+         * @return a directions intent for the provided location
+         * @throws java.lang.IllegalArgumentException if the location is null
+         */
 	public static Intent directionsIntentTo(LatLng location) {
         if(location == null)
             throw new IllegalArgumentException("The location can't be null");
@@ -137,11 +151,11 @@ public class ApuriMapUtils {
             throw new IllegalArgumentException("The location can not be null");
 
 		map.getMap().setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-			@Override
-			public void onMapClick(LatLng point) {
-				map.getActivity().startActivity(ApuriMapUtils.directionsIntentTo(location));
-			}
-		});
+            @Override
+            public void onMapClick(LatLng point) {
+                map.getActivity().startActivity(ApuriMapUtils.directionsIntentTo(location));
+            }
+        });
 	}
 
 }
