@@ -3,7 +3,7 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.1.0'
+        classpath 'com.android.tools.build:gradle:1.1.2'
         classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:0.5'
         classpath 'com.github.dcendents:android-maven-plugin:1.2'
 
@@ -19,14 +19,16 @@ apply plugin: 'com.github.dcendents.android-maven'
 Properties properties = new Properties()
 properties.load(project.rootProject.file('local.properties').newDataInputStream())
 
-def siteUrl = 'https://code.google.com/p/apurilib/'
+def siteUrl = 'https://github.com/apuridev/apuri-lib'
 def gitUrl = 'https://apuridev@code.google.com/p/apurilib/'
 def gpg_pass = properties.getProperty("gpg_pass")
 def version_desc = properties.getProperty("version_desc")
 def version_tag = properties.getProperty("version_tag")
+def mPublish = Boolean.parseBoolean(properties.getProperty("publish"))
 
 group = "br.com.apuri"
 version = properties.getProperty("version")
+
 
 android {
     compileSdkVersion 21
@@ -55,17 +57,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
-//    libraryVariants.all { variant ->
-//        variant.outputs.each { output ->
-//            def outputFile = output.outputFile
-//            if (outputFile != null && outputFile.name.endsWith('.aar')) {
-//                def fileName = "${archivesBaseName}-${version}.aar"
-//                output.outputFile = new File(outputFile.parent, fileName)
-//            }
-//        }
-//    }
 }
+
 
 dependencies {
     compile 'com.android.support:appcompat-v7:21.0.3'
@@ -74,6 +67,58 @@ dependencies {
     compile 'com.google.android.gms:play-services-maps:6.5.87'
     compile 'com.google.android.gms:play-services-base:6.5.87'
 }
+
+install {
+    repositories.mavenInstaller {
+        pom {
+            project {
+                packaging 'aar'
+                name 'apurilib'
+                url siteUrl
+                licenses {
+                    license {
+                        name 'The Apache Software License, Version 2.0'
+                        url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id 'apuridev'
+                        name 'apuri Developers'
+                        email 'apuridev@gmail.com'
+                    }
+                }
+                scm {
+                    connection gitUrl
+                    developerConnection gitUrl
+                    url siteUrl
+
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier = 'sources'
+}
+
+task javadoc(type: Javadoc) {
+    failOnError = false
+    source = android.sourceSets.main.java.srcDirs
+    classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+    classifier = 'javadoc'
+    from javadoc.destinationDir
+}
+artifacts {
+    archives javadocJar
+    archives sourcesJar
+}
+
 
 bintray {
     user = properties.getProperty("bintray_user")
@@ -87,11 +132,12 @@ bintray {
         websiteUrl = siteUrl
         vcsUrl = gitUrl
         licenses = ["Apache-2.0"]
-        publish = false
+        publish = mPublish
         version {
-            name = 'v1.1'//Optional logical version name
+            name = version_tag//Optional logical version name
             desc = version_desc
             vcsTag = version_tag
         }
     }
 }
+
