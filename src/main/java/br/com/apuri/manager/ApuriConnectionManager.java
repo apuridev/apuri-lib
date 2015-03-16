@@ -72,20 +72,21 @@ public class ApuriConnectionManager {
 		connectivity = (ConnectivityManager) 
 				mContext.getSystemService(android.app.Application.CONNECTIVITY_SERVICE);
 		connected = connectivity.getActiveNetworkInfo() != null  && connectivity.getActiveNetworkInfo().isConnected();
-		receiver = new BroadcastReceiver(){
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				boolean noConnectivity = intent.getBooleanExtra(ConnectivityManager.EXTRA_NO_CONNECTIVITY, false);
-				if(noConnectivity && connected){
-					connected = false;
-					notifyConnectionLost();
-				}else if(!noConnectivity && !connected){
-					connected = true;
-					notifyConnectionFound();
-				}
-			}
-		};		
-		mContext.registerReceiver(receiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+        receiver = new BroadcastReceiver(){
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                boolean hasConnection = connectivity.getActiveNetworkInfo() != null
+                        && connectivity.getActiveNetworkInfo().isConnectedOrConnecting();
+                if(connected && !hasConnection) {
+                    connected = false;
+                    notifyConnectionLost();
+                }else if (!connected && hasConnection){
+                    connected = true;
+                    notifyConnectionFound();
+                }
+            }
+        };
+        mContext.registerReceiver(receiver,new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
 	}
 
     /**
