@@ -32,12 +32,36 @@ import java.util.List;
 
 public abstract class ApuriViewAnimatorUtils {
 
-    public abstract void circularAnimation(final View myView,int endVisibility);
+    /**
+     * Do a circular animation in the desired view.
+     * @param view The view to be animated
+     * @param endVisibility One of {@link android.view.View} visibility states
+     */
+    public abstract void circularAnimation(final View view,int endVisibility);
 
+    /**
+     * Fades the view in or out of its parent
+     * @param context The context
+     * @param show True if the view should be visible and false if it should be GONE
+     * @param view The view to be animated
+     */
     public abstract void fadeInOut( Context context, final boolean show, final View view);
 
+    /**
+     * It hides a view and shows the other
+     * @param context The context
+     * @param toHide The view to be hidden
+     * @param toShow The view to be shown
+     * @param hiddenState The hidden state of the view. It should be {@link android.view.View} GONE or INVISIBLE
+     */
     public abstract void fadeOneShowAnother( Context context, final View toHide, final View toShow, int hiddenState);
 
+    /**
+     * It hides some views and shows the others
+     * @param context
+     * @param toHide The views to be hidden. The visible state will be set to GONE
+     * @param toShow The views to be shown
+     */
     public abstract void fadeSomeShowOthers( Context context, final List<? extends View> toHide, final List<? extends View> toShow);
 
     public static class Factory{
@@ -46,15 +70,15 @@ public abstract class ApuriViewAnimatorUtils {
             if(version <= Build.VERSION_CODES.GINGERBREAD_MR1){
                 return new GingerbreadViewAnimator();
             }else if(version <= Build.VERSION_CODES.KITKAT){
-                return new GingerbreadViewAnimator();
+                return new KitKatViewAnimator();
             }else
                 return new ApuriLollipopViewAnimator();
         }
     }
 
     static class GingerbreadViewAnimator extends ApuriViewAnimatorUtils {
-        public void circularAnimation(final View myView, final int endVisibility){
-            myView.setVisibility(endVisibility);
+        public void circularAnimation(final View view, final int endVisibility){
+            view.setVisibility(endVisibility);
         }
 
         @Override
@@ -160,24 +184,24 @@ public abstract class ApuriViewAnimatorUtils {
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     static class ApuriLollipopViewAnimator extends KitKatViewAnimator{
 
-        public void circularAnimation(final View myView, final int endVisibility){
+        public void circularAnimation(final View view, final int endVisibility){
             // get the center for the clipping circle
-            int cx = (myView.getWidth()) / 2;
-            int cy = (myView.getHeight()) / 2;
+            int cx = (view.getWidth()) / 2;
+            int cy = (view.getHeight()) / 2;
 
             // get the initial radius for the clipping circle
             int radius;
             boolean hidingView = endVisibility == View.GONE || endVisibility == View.INVISIBLE;
             if(hidingView)
-                radius = myView.getWidth();
+                radius = view.getWidth();
             else
-                radius = Math.max(myView.getWidth(), myView.getHeight());
+                radius = Math.max(view.getWidth(), view.getHeight());
 
             int startRadius = (hidingView ? radius : 0);
             int endRadius = (hidingView ? 0 : radius);
             // create the animation (the final radius is zero)
             Animator anim =
-                    ViewAnimationUtils.createCircularReveal(myView, cx, cy,
+                    ViewAnimationUtils.createCircularReveal(view, cx, cy,
                             startRadius,endRadius);
 
             anim.setStartDelay(500);
@@ -187,7 +211,7 @@ public abstract class ApuriViewAnimatorUtils {
                 @Override
                 public void onAnimationEnd(Animator animation) {
                     super.onAnimationEnd(animation);
-                    myView.setVisibility(endVisibility);
+                    view.setVisibility(endVisibility);
                 }
             });
 
