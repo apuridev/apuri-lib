@@ -28,10 +28,6 @@ import br.com.apuri.lib.R;
  */
 public class ApuriDividerItemDecoration extends RecyclerView.ItemDecoration {
 
-    private static final int[] ATTRS = new int[]{
-            R.drawable.line_divider
-    };
-
     public static final int HORIZONTAL_LIST = LinearLayoutManager.HORIZONTAL;
 
     public static final int VERTICAL_LIST = LinearLayoutManager.VERTICAL;
@@ -41,9 +37,12 @@ public class ApuriDividerItemDecoration extends RecyclerView.ItemDecoration {
     private int mOrientation;
 
     public ApuriDividerItemDecoration(Context context, int orientation) {
-//        final TypedArray a = context.obtainStyledAttributes(ATTRS);
-        mDivider = context.getResources().getDrawable(R.drawable.line_divider);//a.getDrawable(0);
-//        a.recycle();
+        mDivider = context.getResources().getDrawable(R.drawable.line_divider);
+        setOrientation(orientation);
+    }
+
+    public ApuriDividerItemDecoration(Context context, int orientation,int drawable) {
+        mDivider = context.getResources().getDrawable(drawable);
         setOrientation(orientation);
     }
 
