@@ -111,7 +111,7 @@ public class ApuriConnectionManager {
 	}
 
 	public void addObserver(ApuriConnectionObserver observer){
-		if(!this.observers.contains(observer))
+		if(observer != null && !this.observers.contains(observer))
 			this.observers.add(observer);
 	}
 
@@ -122,7 +122,8 @@ public class ApuriConnectionManager {
 	private synchronized void notifyConnectionFound(){
 		synchronized (observers) {
 			for(ApuriConnectionObserver observer: observers){
-				observer.didFoundConnection();
+                if(observer != null) //hack. unfortunately android does crazy things some times
+				    observer.didFoundConnection();
 			}
 		}
 	}
