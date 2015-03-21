@@ -104,7 +104,7 @@ public class ApuriConnectionManager {
      */
 	public synchronized boolean registerForConnectionObserverIfNotConnected(ApuriConnectionObserver observer){
 		if(!isConnected()){
-			this.observers.add(observer);
+			addObserver(observer);
 			return false;
 		}else
 			return true; 
@@ -131,7 +131,8 @@ public class ApuriConnectionManager {
 	private synchronized void notifyConnectionLost(){
 		synchronized (observers) {
 			for(ApuriConnectionObserver observer: observers){
-				observer.didLostConnection();
+                if(observer != null) //hack. unfortunately android does crazy things some time
+                    observer.didLostConnection();
 			}
 		}
 	}
