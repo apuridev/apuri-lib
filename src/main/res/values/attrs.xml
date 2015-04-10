@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<resources>
+    <declare-styleable name="DateTextView">
+        <attr name="dateType" format="enum">
+            <enum name="date" value="0"/>
+            <enum name="hour" value="1"/>
+        </attr>
+    </declare-styleable>
+</resources>
