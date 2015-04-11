@@ -23,6 +23,7 @@ import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 
@@ -38,6 +39,14 @@ public abstract class ApuriViewAnimatorUtils {
      * @param endVisibility One of {@link android.view.View} visibility states
      */
     public abstract void circularAnimation(final View view,int endVisibility);
+
+    /**
+     * Do a circular animation in the desired view. Use this method if know
+     * the views height and width
+     * @param view The view to be animated
+     * @param endVisibility One of {@link android.view.View} visibility states
+     */
+    public abstract void circularAnimation(final View view,int width, int height,int endVisibility);
 
     /**
      * Fades the view in or out of its parent
@@ -79,6 +88,11 @@ public abstract class ApuriViewAnimatorUtils {
     static class GingerbreadViewAnimator extends ApuriViewAnimatorUtils {
         public void circularAnimation(final View view, final int endVisibility){
             view.setVisibility(endVisibility);
+        }
+
+        @Override
+        public void circularAnimation(View view, int width, int height, int endVisibility) {
+            circularAnimation(view,endVisibility);
         }
 
         @Override
@@ -181,42 +195,61 @@ public abstract class ApuriViewAnimatorUtils {
     }
 
 
+    private static float dpFromPx(final Context context, final float px) {
+        return px / context.getResources().getDisplayMetrics().density;
+    }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     static class ApuriLollipopViewAnimator extends KitKatViewAnimator{
 
-        public void circularAnimation(final View view, final int endVisibility){
+        public void circularAnimation(final View view, int width, int height ,final int endVisibility){
             // get the center for the clipping circle
-            int cx = (view.getWidth()) / 2;
-            int cy = (view.getHeight()) / 2;
+            int cx = width/2;
+            int cy = height/2;
+
 
             // get the initial radius for the clipping circle
             int radius;
-            boolean hidingView = endVisibility == View.GONE || endVisibility == View.INVISIBLE;
+            boolean hidingView = (endVisibility == View.GONE || endVisibility == View.INVISIBLE);
+
             if(hidingView)
-                radius = view.getWidth();
+                radius = width;
             else
-                radius = Math.max(view.getWidth(), view.getHeight());
+                radius = Math.max(width, height) / 2 ;
 
             int startRadius = (hidingView ? radius : 0);
             int endRadius = (hidingView ? 0 : radius);
             // create the animation (the final radius is zero)
             Animator anim =
-                    ViewAnimationUtils.createCircularReveal(view, cx, cy,
+                    ViewAnimationUtils.createCircularReveal(view, cx,cy,
                             startRadius,endRadius);
 
-            anim.setStartDelay(500);
 
-            // make the view invisible when the animation is done
-            anim.addListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    view.setVisibility(endVisibility);
-                }
-            });
+
+            anim.setDuration(view.getContext().getResources().getInteger(android.R.integer.config_longAnimTime));
+
+            if(hidingView)
+                anim.addListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        view.setVisibility(endVisibility);
+                    }
+                });
+            else
+                view.setVisibility(View.VISIBLE);
+
 
             // start the animation
             anim.start();
+        }
+
+        public void circularAnimation(final View view, final int endVisibility){
+            if(view.getWidth() == 0 || view.getHeight() == 0){
+                Log.w("ApuriViewAnimator","Warning! View size contains a zero. View: "+view+"; " +
+                        "Width: "+view.getWidth()+"; Height: "+view.getHeight());
+            }
+            this.circularAnimation(view,view.getWidth(),view.getHeight(),endVisibility);
         }
     }
 }
