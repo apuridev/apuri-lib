@@ -50,4 +50,17 @@ public class ApuriDateUtils {
         return calendar.getTime();
     }
 
+	public static int differenceInDays(Date a, Date b){
+		Calendar greater = Calendar.getInstance(Locale.getDefault());
+		Calendar lower = Calendar.getInstance(Locale.getDefault());
+		if(a.getTime() - b.getTime() < 0){
+			greater.setTime(b);
+			lower.setTime(a);
+		}else{
+			greater.setTime(a);
+			lower.setTime(b);
+		}
+		return greater.get(Calendar.DAY_OF_YEAR) - lower.get(Calendar.DAY_OF_YEAR);
+	}
+
 }
